@@ -1,8 +1,8 @@
-# supragent
+# skillet
 
-[![skills.sh](https://skills.sh/b/caelaxie/supragent)](https://skills.sh/caelaxie/supragent)
+[![skills.sh](https://skills.sh/b/caelaxie/skillet)](https://skills.sh/caelaxie/skillet)
 
-`supragent` is a compact repository of agent skills for standardizing and accelerating common agent workflows.
+`skillet` is a compact repository of agent skills for standardizing and accelerating common agent workflows.
 
 Skills follow the [Agent Skills](https://agentskills.io) format (`skills/<name>/SKILL.md`) and are managed with the open skills CLI:
 
@@ -10,39 +10,39 @@ Skills follow the [Agent Skills](https://agentskills.io) format (`skills/<name>/
 npx skills --help
 ```
 
-Browse this package on [skills.sh/caelaxie/supragent](https://skills.sh/caelaxie/supragent).
+Browse this package on [skills.sh/caelaxie/skillet](https://skills.sh/caelaxie/skillet).
 
 ## Install
 
 List skills without installing:
 
 ```bash
-npx skills add caelaxie/supragent --list
+npx skills add caelaxie/skillet --list
 ```
 
 Install all skills globally (recommended for personal use):
 
 ```bash
-npx skills add caelaxie/supragent --global --all
+npx skills add caelaxie/skillet --global --all
 ```
 
 Install one skill globally:
 
 ```bash
-npx skills add caelaxie/supragent --global --skill commit
+npx skills add caelaxie/skillet --global --skill commit
 ```
 
 Install into the current project only (omit `--global`):
 
 ```bash
-npx skills add caelaxie/supragent --skill commit
+npx skills add caelaxie/skillet --skill commit
 ```
 
 Install from a local clone:
 
 ```bash
-npx skills add ./path/to/supragent --list
-npx skills add ./path/to/supragent --skill rust-guidelines
+npx skills add ./path/to/skillet --list
+npx skills add ./path/to/skillet --skill rust-guidelines
 ```
 
 ## Manage
@@ -69,7 +69,7 @@ npx skills find rust guidelines
 Use a skill once without installing it:
 
 ```bash
-npx skills use caelaxie/supragent@commit
+npx skills use caelaxie/skillet@commit
 ```
 
 ## Skill Catalog
