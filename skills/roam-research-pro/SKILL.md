@@ -19,13 +19,13 @@ When a write includes a diagram, load the matching reference below. Do not paste
 
 A bar or xy chart needs `[]`. Roam consumes those brackets before mermaid runs. Write a pie instead.
 
-Roam's UI docs nest `-->` bullets under `{{mermaid}}`. That path is not either dialect below. Do not copy UI flowchart examples into `create_block` markdown.
+Roam's UI docs nest `-->` bullets under `{{mermaid}}`. That path is not either reference dialect. Do not copy UI flowchart examples into `create_block` markdown.
 
 A successful MCP write is not a rendered diagram. If the picture is truncated or shows a parse error, the stored source is wrong or the render is stale. Clicking out of the `{{mermaid}}` block and back in refreshes a stale picture. Do not rewrite a child that already matches its dialect.
 
 ## References
 
-Load only the reference for the diagram you are writing or fixing.
+Load only the reference for the diagram you are writing or fixing. After the write, run that file's Verify section before stopping.
 
-- `references/mermaid-flowchart.md`: one `{{mermaid}}` child, statements joined by `;`, edges `==>`, nodes `id(label)`.
-- `references/mermaid-pie.md`: one child per source line, first child exactly `pie`. `pie showData` and a one-line `pie; ...` both fail.
+- Flowchart: `references/mermaid-flowchart.md`
+- Pie: `references/mermaid-pie.md`

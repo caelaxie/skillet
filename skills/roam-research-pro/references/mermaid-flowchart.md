@@ -8,14 +8,14 @@ One `{{mermaid}}` parent. Exactly one child. The whole diagram in that child as 
 ```
 
 - Parent text is exactly `{{mermaid}}`.
-- Nodes are `id(label)` or `id("label")`. Never square brackets.
+- Nodes are `id(label)` or `id("label")`. Never square brackets. `A[label]` is a Roam alias, so that label never reaches mermaid.
 - Edges are `==>`.
 - Quote a label that contains `)` or `;`. Colons and spaces inside parentheses are fine: `keep(verified: use fresh state)`.
 - IDs are `[A-Za-z][A-Za-z0-9_]*`.
 
 `create_block` / `create_page` markdown must nest that one child under `{{mermaid}}`. To fix a broken flowchart, `update_block` the existing child with the full one-line string. Do not `create_block` a second `{{mermaid}}` beside it.
 
-GitHub flowchart source fails because each source line becomes its own child, and the diagram then shows only a fragment.
+GitHub flowchart source also fails when each source line becomes its own child. The diagram then shows only a fragment.
 
 When reading a flowchart that already matches this dialect and renders, leave it.
 
