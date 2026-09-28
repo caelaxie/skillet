@@ -9,7 +9,8 @@
         "commit",
         "pr",
         "review-team",
-        "explain-diff-html"
+        "explain-diff-html",
+        "pr-review-html"
       ]
     },
     {
