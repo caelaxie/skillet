@@ -14,7 +14,7 @@ Build an HTML page that presents a PR diff reorganized for reviewer comprehensio
 
 ## Prerequisites
 
-Write one HTML file. Decide its structure from the diff in front of you rather than guessing.
+Write one HTML file to the system temp directory. Decide its structure from the diff in front of you rather than guessing.
 
 ## Gather the diff
 
