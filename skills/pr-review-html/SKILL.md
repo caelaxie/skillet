@@ -1,112 +1,66 @@
 ---
 name: pr-review-html
-description: Build one self-contained HTML walkthrough of a diff the user names, either a GitHub pull request URL or number or a local git range. Use for a PR review, a diff walkthrough, or a change-set overview. The page leads with full core diffs, then condensed wiring, then boilerplate as a list, with short why notes and rare risk callouts. Do not use it for a teaching explanation, and do not guess a branch.
+description: >-
+  Render a PR diff review as an HTML page that groups changes by
+  reviewer importance, separates boilerplate from core logic, and
+  highlights tricky or unexpected code. Use when reviewing a pull
+  request, summarizing a diff for review, or when the user asks for a
+  PR review html, diff walkthrough, or change-set overview.
 ---
 
-# PR review HTML
+# PR Review HTML
 
-Build one HTML file a reviewer can open. The page orders the diff by review value. It is not `explain-diff-html`.
+Build an HTML page that presents a PR diff reorganized for reviewer comprehension — not in file-tree order.
 
-## Name the diff
+## Prerequisites
 
-If the user did not name a diff, ask for one and stop.
+Write one HTML file. Decide its structure from the diff in front of you rather than guessing.
 
-Accept one of these.
+## Gather the diff
 
-- A GitHub pull request URL, such as `https://github.com/acme/payments/pull/482`
-- `owner/repo#482`
-- A bare pull request number, such as `482`, when the current checkout is that repository
-- One git range token that contains `..` or `...`, such as `main...fix-token`
+Expect a GitHub PR link (a full URL like `https://github.com/<owner>/<repo>/pull/<n>`, or an equivalent `gh`-resolvable reference). Use `gh pr diff <pr>` to collect every file's path, additions, deletions, and hunks.
 
-Do not infer the current branch.
-Do not run `git diff` with no range.
-Do not switch from `gh` to `git`, or from `git` to `gh`, when a fetch fails.
+**If the user didn't provide a PR link, stop and ask.** Do not guess at the current branch, infer from recent history, or fall back to a local `git diff`. Ask the user which diff they want to review — a specific PR URL or number — and wait for their reply before continuing.
 
-## Load the diff
+## Group changes for comprehension
 
-`SKILL_DIR` is the directory that contains this file.
+Do **not** present files in alphabetical or tree order. Reorganize into sections ordered by reviewer value:
 
-```bash
-DIR=$(python3 "$SKILL_DIR/scripts/review.py" load --spec 'SPEC')
-```
+1. **Core logic** — New behavior, algorithm changes, state transitions, API surface changes. Show full diffs with surrounding context.
+2. **Wiring & integration** — Route registration, dependency injection, config plumbing that connects the core logic. Condensed — enough to confirm correctness.
+3. **Boilerplate & mechanical** — Import reordering, renames, generated code, formatting, type re-exports. Summarize as a list of file names and stats. No inline diffs unless specifically relevant.
 
-The command prints a directory and writes `$DIR/raw.json`.
-Exit 2 means the name was not one diff. Ask the user, and use the sentence on stderr.
-Exit 1 means the fetch failed. Show the stderr text, then stop.
-Do not fetch the diff again. `raw.json` is the diff.
+Lead with core logic. The reviewer's attention is freshest at the top.
 
-## Write the review
+## Distill complex logic into pseudocode
 
-Write `$DIR/review.json`.
-Unknown keys fail.
-Do not order files by name or by directory.
-Put the riskiest core file first.
-Put each path in one section.
-Include every path from `raw.json`.
+When a core change involves dense or intricate logic — deeply nested conditions, state machines, retry/backoff flows, multi-step transformations — add a short pseudocode summary next to the diff. The pseudocode should strip away language syntax, error handling, and boilerplate to expose the essential algorithm or control flow in a few lines. This lets the reviewer confirm intent before reading the real code.
 
-`core` shows every hunk, with the surrounding context lines. Use it for new behavior, algorithm changes, state transitions, and API changes. A file that contains that kind of change stays in `core` even when it also changes imports.
-`wiring` lists only the hunks in `shown_hunks`. Use it for route registration, dependency injection, and config that connects the core change. List only the hunks a reviewer needs in order to confirm that connection. An empty `shown_hunks` list keeps the why and omits the diff.
-`boilerplate` is a path. Use it for import reordering, renames, generated code, formatting, and type re-exports. The page shows the name and the stats, not the diff. If one hunk in that file actually matters, put the file in `wiring` and list only that hunk.
+Only do this when the actual diff is hard to scan. Straightforward changes don't need a pseudocode mirror.
 
-Hunk ids are `h1`, `h2`, and so on, in the order `raw.json` lists them for that file.
+## Trace tricky logic on a concrete example
 
-```json
-{
-  "why": "Retries now fail fast when the circuit is open, instead of waiting out a provider that is already down.",
-  "core": [
-    {
-      "path": "src/retry.ts",
-      "why": "The open-breaker short-circuit is the behavior to trust. payments.ts only constructs this client.",
-      "aids": [
-        {
-          "hunk_id": "h2",
-          "pseudocode": "if breaker is open:\n  fail fast\nfor attempt in 1..n:\n  try fetch with timeout\n  on retryable: sleep backoff\n  else: throw",
-          "trace": {
-            "input": "breaker open, GET /charge",
-            "before": ["enter fetch", "send request", "time out"],
-            "after": ["enter fetch", "see open breaker", "return error"],
-            "diverge_at": 1,
-            "outcome": "The caller gets an error and no request is sent."
-          },
-          "callouts": [
-            {
-              "tag": "Breaking",
-              "why": "Callers that treated a timeout as retryable now see an immediate open-breaker error."
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "wiring": [
-    {
-      "path": "src/payments.ts",
-      "why": "This is the only call site that now passes a breaker into the client.",
-      "shown_hunks": ["h1"],
-      "aids": []
-    }
-  ],
-  "boilerplate": [
-    {"path": "src/index.ts"}
-  ]
-}
-```
+Pseudocode shows the shape of the change; an example trace shows it executing. When a hunk changes behavior in a way that's hard to predict from reading it — reordered effects, new short-circuits, altered edge cases — pick a concrete input and walk it through both the old and new code paths side-by-side, highlighting the step where they diverge and what the observable outcome is. Keep the input small and realistic.
 
-Add pseudocode only on a core hunk, and only when the diff is hard to scan. Nested conditions, a state machine, retry or backoff, and a multi-step transformation qualify. Drop the language syntax, the error handling, and the mechanical lines. A straightforward change gets no pseudocode.
-Add a trace only when the new behavior is hard to predict. Reordered effects, a new short-circuit, and a changed edge case qualify. Use one small realistic input. `diverge_at` is the step where the old path and the new path split. `outcome` is what a caller can observe.
-Add a callout only when the tag is earned. The tags are `Subtle`, `Breaking`, `Race condition`, and `Perf`. Write one sentence. The page places that sentence directly above the hunk. Most hunks get no callout.
-Write each why as one or two sentences. Say why it changed. Name the other file it calls, or the file that calls it. Mention anything the diff itself hides.
+Use this for genuinely surprising behavior changes, not every core hunk.
 
-The breaker callout above is a good aid. It names a caller-visible change the diff does not spell out.
-A `Subtle` callout on an import rename is a bad aid. Put that file in `boilerplate` and omit the aid.
+## Call attention to tricky things
 
-## Render
+When a hunk contains something surprising, risky, or easy to miss, visually separate it from the surrounding diff and pair it with a short tag (e.g. "Subtle", "Breaking", "Race condition", "Perf") and a one-sentence explanation so the reviewer sees the concern and the code together.
 
-```bash
-python3 "$SKILL_DIR/scripts/review.py" render --workdir "$DIR"
-```
+Reserve these callouts for genuinely tricky items — overuse destroys signal.
 
-The command prints the HTML path. Give that path to the user.
-Do not start a server.
-Do not edit the HTML.
-If render exits 1, the previous HTML file is unchanged. Fix `review.json` and run render again.
+## Tone and content
+
+Write reviewer-facing commentary, not a changelog. Focus on:
+- **Why** something changed, not just what changed.
+- Interactions between files — e.g. "The new validator in `core.ts` is invoked by the route added in `routes.ts`."
+- Anything the diff alone doesn't make obvious.
+
+Keep commentary terse. One or two sentences per note.
+
+## Be creative
+
+The sections above are a floor, not a ceiling. The goal is the fastest possible path for the reviewer to understand this specific change — so look at the diff in front of you and ask what representation would actually help. A tiny state diagram, a before/after call graph, a table of input→output pairs, a timeline of commits, a confidence annotation per file, a single large callout with everything else collapsed — whatever fits the change.
+
+The HTML page has charts, tables, diff views, DAG layout, cards, stats, interactive state, and more. Reach for whichever components best serve the change at hand. A review of a refactor looks different from a review of a bug fix looks different from a review of a new feature — let the page reflect that.

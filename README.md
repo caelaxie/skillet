@@ -83,7 +83,7 @@ npx skills use caelaxie/skillet@commit
 | `commit` | Fallback commit workflow using conventional messages when a project has no commit-specific guidance. |
 | `d2lang` | Supports D2 diagram creation, refactoring, validation, and export workflows. |
 | `explain-diff-html` | Geoffrey Litt's skill for generating rich, interactive HTML explanations of code changes, diffs, branches, and PRs. |
-| `pr-review-html` | Builds one HTML walkthrough of a named pull request or git range, ordered as core logic, wiring, then boilerplate. |
+| `pr-review-html` | Renders a pull request diff as one HTML page, grouped by reviewer importance rather than file order. |
 | `hermes-plugin-development` | Guides Hermes plugin authoring and validation across manifests, registration, tools, hooks, and enablement. |
 | `modified-karpathy-guidelines` | Provides coding guidance to reduce overcomplication and improve code quality. |
 | `model-detector` | Finds exact model IDs for Oh My Pi (OMP), Codex, OpenCode, APIs, and extensible coding-agent runners from first-party runtime evidence, config, logs, and request or response fields. |
