@@ -1,6 +1,6 @@
 ---
 name: roam-research-pro
-description: Write and edit Roam Research graphs without producing mermaid that Roam cannot render. Use when creating or updating Roam pages or blocks, embedding diagrams or code snippets in Roam, or the user mentions Roam, {{mermaid}}, roam mermaid, a code fence, or /roam-research-pro. Flowcharts are one child with statements joined by `;`, edges `==>`, and nodes `id(label)`. Pie charts are one child per source line, first child exactly `pie`. `pie showData`, a one-line `pie; ...`, and the two characters `\` and `n` between statements all fail. A bar chart needs `[]`, which Roam consumes before mermaid runs. A code snippet is one fenced block. Its line breaks are newline characters in that block, and the language id is glued to the opening fence.
+description: Write and edit Roam Research graphs without producing mermaid that Roam cannot render. Use when creating or updating Roam pages or blocks, embedding diagrams or code snippets in Roam, or the user mentions Roam, {{mermaid}}, roam mermaid, a code fence, or /roam-research-pro. Flowcharts are one child with statements joined by `;`, edges `==>`, and nodes `id(label)`. Pie charts are one child per source line, first child exactly `pie`. `pie showData`, a one-line `pie; ...`, and the two characters `\` and `n` between statements all fail. A bar chart needs `[]`, which Roam consumes before mermaid runs. A mermaid diagram is a `{{mermaid}}` block. A code fence shows that source and does not render the picture. Any other code snippet is one fenced block. Its line breaks are newline characters in that block, and the language id is glued to the opening fence.
 ---
 
 # Roam Research
@@ -9,9 +9,9 @@ description: Write and edit Roam Research graphs without producing mermaid that 
 
 Call `get_graph_guidelines` once per graph per session before the first read or write. Use the connected `roam` or `roam_research` MCP tools. Honor that graph's `roamSyntax` for ordinary blocks.
 
-When a write includes a diagram, load the matching reference below. Do not paste a mermaid fenced code block into Roam.
+When a write includes a mermaid diagram, load the matching reference below and write a `{{mermaid}}` block. A code fence shows the mermaid source and does not render the picture.
 
-When a write includes a code snippet, load the code fence reference.
+When a write includes any other code snippet, load the code fence reference.
 
 ## Why MCP mermaid breaks
 

@@ -1,5 +1,7 @@
 # Code fence
 
+A mermaid diagram is not a snippet. Write a `{{mermaid}}` block and follow the flowchart or pie reference. A fence shows the source and does not render the picture.
+
 A snippet is one block. Opening backticks, the language id glued on, a newline, the code, then closing backticks glued to the last code line.
 
 `create_block` and `create_page` parse the fence below into that block. Put the closing fence on its own line. The parser drops the newline in front of it.
@@ -43,6 +45,7 @@ When a fence's raw string already has newline characters and the closing fence i
 
 Pass the uid in `inputs`.
 
+- The language id is not `mermaid`, and the body is not mermaid source. Rewrite a diagram as a `{{mermaid}}` block with the flowchart or pie reference.
 - The string starts with ``` and the language id, then a newline.
 - The string ends with ``` glued to the last code character.
 - In the tool result a line break is JSON `\n`. The two characters `\` and `n` are JSON `\\n`. `\\n` on a code line is source, as in `split("\n")`. The fence is flattened when `\\n` is the separator between the opening fence, the code lines, and the closing fence. Rewrite that block with `create_block`, or `update_block` the glued string above.
